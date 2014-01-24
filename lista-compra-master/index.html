@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html ng-app="listacompra">
+<head>
+    <meta charset="utf-8">
+    <title>Lista de Compras</title>
+
+
+    <!-- CSS -->
+    <link rel="stylesheet" href="css/bootstrap.css"/>
+    <link rel="stylesheet" href="css/uikit.min.css"/>
+    <link rel="stylesheet" href="css/comprado.css"/>
+    <link  href="css/sb-admin.css" rel="stylesheet"/>
+    <link rel="stylesheet" href="css/font-awesome.min.css">
+    <!-- JavaScript -->
+    <script src="js/jquery.min.js"></script>
+    <script src="js/bootstrap.js"></script>
+    <script src="js/angular.min.js"></script>
+    <script src="js/produtosCtrl.js"></script>
+    <script src="js/uikit.min.js"></script>
+
+    <link rel="shortcut icon" href="img/favicon.png">
+</head>
+<body data-ng-controller="listaCtrl">
+<div id="wrapper"> <!--Organiza o layout dentro das Barras-->
+<nav class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+    <div class="navbar-header">
+        <a class="navbar-brand" href="index.html"><i class="fa fa-home"></i> Portal das Compras</a>
+    </div>
+    <div class="collapse navbar-collapse navbar-ex1-collapse">
+        <!--Cria os itens do menu-->
+        <ul class="nav navbar-nav side-nav" id="menu">
+            <li>
+                <a href="#listacompra" data-ng-click="lista=''" data-toggle="tab">
+                    <i class="fa fa-list"></i> Lista de Compra
+                </a>
+            </li>
+            <li>
+                <a href="#itenscompra" data-toggle="tab">
+                    <i class="fa fa-credit-card"></i> Produtos
+                </a>
+            </li>
+            <li>
+                <a href="#cadConsulta" data-ng-click="listaProd=''" data-toggle="tab">
+                    <i class="fa fa-search"></i> Consulta
+                </a>
+            </li>
+        </ul>
+    </div>
+</nav>
+<br/>
+<section class="container">
+<div class="row">
+<div class="tab-content">
+<!--Cria o cadastro de listas-->
+<div class="tab-pane active" id="listacompra">
+    <div class="row clearfix">
+        <div class="col-md-10 column">
+            <div class="jumbotron well" style="background-color: #d2cdd0; border: 1px solid #a2a1a3; color: #000000" >
+                <h1>
+                    Cadastro de listas!
+                </h1>
+                <p>
+                    Aqui você realiza o cadastro de listas.
+                </p>
+            </div>
+
+            <div class="col-md-12 column">
+                <form role="form">
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label>Nome:</label>
+                            <input data-ng-model="listaNome" type="text" class="form-control" required/>
+
+                            <input data-ng-model="lista" type="hidden"/>
+                        </div>
+                        <div class="form-group">
+                            <label>Data de Cadastro:</label>
+                            <input data-ng-model="listaData" type="date" class="form-control"/>
+                        </div>
+                        <a data-ng-click="addLista(lista)" type="submit" class="btn btn-danger"><i class="fa fa-save"></i> Salvar</a>
+                        <a type="reset" class="btn btn-success" ng-click="cancelar()"><i class="fa fa-trash-o"></i> Cancelar</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!--Cadastra os produtos nas listas-->
+
+<div class="tab-pane active" id="itenscompra">
+    <div class="row clearfix">
+        <div class="col-md-10 column">
+            <div class="jumbotron well" style="background-color: #5fc7d2; border: 1px solid #76ace3; color: #000000" >
+                <h1>
+                    Cadastro de produtos!
+                </h1>
+                <p>
+                    Insira seus produtos nas listas de compra.
+                </p>
+            </div>
+            <div class="col-md-12 column">
+                <form role="form">
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label class="control-label">Lista:</label>
+                            <select data-ng-model="lista"
+                                    ng-options="obj.codigo as obj.nome for obj in listasProdutos" class="form-control">
+                                <option value="">
+                                    Selecione uma lista
+                                </option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="control-label">Produto:</label>
+                            <input ng-model="produtoNome" type="text" class="form-control" placeholder="Nome do produto..." required/>
+                            <input ng-model="produto" type="hidden"/>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Preço:</label>
+                            <input ng-model="produtoPreco"type="text" class="form-control" placeholder="0.99"/>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Quantidade:</label>
+                            <input ng-model="produtoQuant"type="number" min="0" class="form-control" placeholder="Quantidade do produto..."/>
+                        </div>
+                        <a ng-click="addProduto(lista)" type="submit" class="btn btn-danger"><i class="fa fa-save"></i> Salvar</a>
+                        <a type="reset" class="btn btn-success" ng-click="cancelar()"><i class="fa fa-trash-o"></i> Cancelar</a>
+                    </div>
+                    <div class="col-md-5" align="center">
+                        <div class="form-group">
+                            <label class="control-label">Imagem:</label>
+                            <a href="#imagem" data-toggle="modal">
+                                <img ng-src="{{produtoImagem | imagemPadrao }}"
+                                     width="64" height="64" alt="Adicionar imagem" style="border-radius: 8px">
+                            </a>
+                            <input ng-model="produtoImagem" type="hidden">
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<!--Consulta de listas e produtos -->
+<div class="tab-pane active" id="cadConsulta">
+    <div class="row clearfix">
+        <div class="col-md-10 column">
+            <div class="jumbotron well" style="background-color: #4CE46B; border: 1px solid #21ba2f; color: #000000">
+                <h1>
+                    Consultas!
+                </h1>
+                <p>
+                    Consulte sua lista ou seus produtos!
+                </p>
+            </div>
+            <ul class="nav nav-tabs" id="consultaMenu">
+                <li>
+                    <a href="#consultaLista" data-toggle="tab" a>Listas</a>
+                </li>
+                <li>
+                    <a href="#consultaCompra" data-toggle="tab">Produtos</a>
+                </li>
+            </ul>
+            <br>
+            <!---Define qual tabela vai para qual aba.-->
+            <section class="container">
+                <div class="row">
+                    <div class="tab-content">
+                        <!----Conteudo selecionado pela aba lista--->
+                        <div class="tab-pane active" id="consultaLista">
+                            <div class="col-md-10">
+                                <table class="table">
+                                    <thead>
+                                    <tr>
+                                        <th>Nome</th>
+                                        <th>Data de criação</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    <tr ng-repeat="lista in listasProdutos">
+                                        <td>
+                                            <a ng-click="listaSelect(lista.codigo)"></a>
+                                            {{lista.nome}}
+                                        </td>
+                                        <td>
+                                            {{ lista.data }}
+                                        </td>
+                                        <td>
+                                            <a ng-click="listaDelete(lista.codigo)" class="btn btn-danger">
+                                                <i class="fa fa-trash-o"></i>
+                                            </a>
+                                            <a href="#edtLista" class="btn btn-success" data-toggle="modal" ng-click="listaEdit(lista.codigo,lista.nome,lista.data)">
+                                                <i class="fa fa-edit"></i>
+                                            </a>
+                                        </td>
+                                    </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <!----Conteudo selecionado pela aba produtos--->
+                        <div class="tab-pane active" id="consultaCompra">
+                            <div class="col-md-10">
+                                <div class="form-group">
+                                    <label class="control-label"> Lista:</label><br/>
+                                    <div class="col-md-5">
+                                        <select ng-model="listaProd"
+                                                ng-options="objprod.codigo as objprod.nome for objprod in listasProdutos" class="form-control">
+                                            <option value="">
+                                                Selecione uma lista
+                                            </option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <br/>
+                                <table class="table">
+                                    <thead>
+                                    <tr>
+                                        <th>Produto Comprado?</th>
+                                        <th>Imagem</th>
+                                        <th>Nome</th>
+                                        <th>Preço</th>
+                                        <th>Quantidade</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    <tr ng-repeat="produto in produtosListas |  filter:{cod_lista:retornaLista(listaProd)}">
+                                        <td>
+                                            <input type="checkbox" ng-model="produto.comprado"/>
+                                        </td>
+                                        <td>
+                                            <a href="#mostraImagem" data-uk-modal ng-click="retornaImagem(produto.img)">
+                                            <img ng-src="{{produto.img | imagemPadrao}}" alt="{{produto.produto}}"  width="64" height="64" style="border-radius: 8px"/>
+                                            </a>
+                                        </td>
+                                        <td class="comprado-{{produto.comprado}}">
+                                            {{produto.produto}}
+                                        </td>
+                                        <td class="comprado-{{produto.comprado}}">
+                                            {{produto.preco | currency:'$'}}
+                                        </td>
+                                        <td class="comprado-{{produto.comprado}}">
+                                            {{produto.quantidade}}
+                                        </td>
+                                        <td>
+                                            <a ng-click="produtoDelete(produto.codigo)" class="btn btn-danger">
+                                                <i class="fa fa-trash-o"></i>
+                                            </a>
+                                            <a href="#edtProd" class="btn btn-success" data-toggle="modal" ng-click="produtoEdit(produto.cod_lista,produto.codigo,produto.produto,produto.preco,produto.quantidade,produto.img)">
+                                                <i class="fa fa-edit"></i>
+                                            </a>
+                                        </td>
+                                    </tr>
+                                    </tbody>
+                                </table>
+                                <p class="col-lg-offset-8"><strong>Preço Total:
+                                      {{valorTotal(listaProd) | currency: '$'}}</strong>
+
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </div>
+</div>
+</div>
+</div>
+</section>
+</div><!-- /#wrapper -->
+
+<!--- Criar a tela de edição de listas--->
+<div class="modal fade" id="edtLista" tabindex="-1" role="dialog">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title"> <i class="fa fa-list"></i> Edição de lista</h4>
+            </div>
+            <div class="modal-listabody">
+                <div class="col-md-12 column">
+                    <form role="form">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label>Nome:</label>
+                                <input data-ng-model="listaNome" type="text" class="form-control" required/>
+
+                                <input data-ng-model="lista" type="hidden"/>
+                            </div>
+                            <div class="form-group">
+                                <label>Data de Cadastro: {{lista.data}}</label>
+                                <input data-ng-model="listaData"type="date" class="form-control"/>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <a data-ng-click="addLista(lista)" data-dismiss="modal" type="submit" class="btn btn-danger"><i class="fa fa-save"></i> Salvar</a>
+                <a type="reset" class="btn btn-success" data-dismiss="modal" aria-hidden="true" ng-click="cancelar()"><i class="fa fa-trash-o"></i> Cancelar</a>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+
+<!--- Criar a tela de edição de listas--->
+<div class="modal fade" id="edtProd" tabindex="-1" role="dialog">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title"> <i class="fa fa-credit-card"></i> Edição de Produtos</h4>
+            </div>
+            <div class="modal-body">
+                <div class="col-md-12 column">
+                    <form role="form">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label class="control-label">Lista:</label>
+                                <select data-ng-model="lista"
+                                        ng-options="obj.codigo as obj.nome for obj in listasProdutos" class="form-control">
+                                    <option value="">
+                                        Selecione uma lista
+                                    </option>
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="control-label">Produto:</label>
+                                <input ng-model="produtoNome" type="text" class="form-control" placeholder="Nome do produto..." required/>
+                                <input ng-model="produto" type="hidden"/>
+                            </div>
+
+                            <div class="form-group">
+                                <label>Preço:</label>
+                                <input ng-model="produtoPreco"type="text" class="form-control" placeholder="0.99"/>
+                            </div>
+
+                            <div class="form-group">
+                                <label>Quantidade:</label>
+                                <input ng-model="produtoQuant"type="number" min="0" class="form-control" placeholder="Quantidade do produto..."/>
+                            </div>
+                        </div>
+                        <div class="col-md-5" align="center">
+                            <div class="form-group">
+                                <label class="control-label">Imagem:</label>
+                                <a href="#imagem" data-toggle="modal">
+                                    <img ng-src="{{produtoImagem | imagemPadrao }}"
+                                         width="64" height="64" alt="Adicionar imagem" style="border-radius: 8px">
+                                </a>
+                                <input ng-model="produtoImagem" type="hidden">
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <a data-ng-click="addProduto(lista)" data-dismiss="modal" type="submit" class="btn btn-danger"><i class="fa fa-save"></i> Salvar</a>
+                <a type="reset" class="btn btn-success" data-dismiss="modal" aria-hidden="true" ng-click="cancelar()"><i class="fa fa-trash-o"></i> Cancelar</a>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+<!--Upload de imagem via URL-->
+<div class="modal fade" id="imagem" tabindex="-1" role="dialog">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title"> <i class="fa fa-picture-o"></i> Upload Imagem</h4>
+            </div>
+            <div class="modal-imagem">
+                <div class="col-md-12">
+                    <div class="col-md-4">
+                        <img ng-src="{{produtoImagem | imagemPadrao }}" alt="Imagem" width="150" height="150" style="border-radius: 8px"/>
+                    </div>
+                    <div class="col-md-6">
+                        <label><i class="fa fa-picture-o"></i> URL:</label>
+                        <br/>
+                        <input ng-model="imagemUrl" type="text" class="form-control" placeholder="http://www.allmystery.de/i/tS2YiH2_Stonehenge-Whilshire-England-1-FJANUXHBH.jpg"/>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <a ng-click="produtoUrl(imagemUrl)" class="btn btn-success"><i class="fa fa-upload"></i> Upload</a>
+                <a type="submit" class="btn btn-danger" data-dismiss="modal" aria-hidden="true"><i class="fa fa-save"></i> Ok</a>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+<!--- Exibe a da tabela em formato grande---->
+<div id="mostraImagem" class="uk-modal">
+    <div class="uk-modal-dialog uk-modal-dialog-frameless">
+        <a href="" class="uk-modal-close uk-close uk-close-alt"></a>
+        <img ng-src="{{imagemExibe | imagemPadrao }}" width="600" alt="">
+    </div>
+</div>
+
+</body>
+</html>
